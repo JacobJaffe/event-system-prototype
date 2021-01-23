@@ -1,0 +1,35 @@
+{
+  "name": "kotan",
+  "version": "1.0.0",
+  "description": "Kotan monorepo",
+  "main": " ",
+  "repository": "git@github.com:JacobJaffe/kotan.git",
+  "author": "Jacob Jaffe",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "postinstall": "rexreplace \"followSymlinks: false\" \"followSymlinks: true\" ./node_modules/watchpack/lib/DirectoryWatcher.js -V",
+    "dev-client": "yarn --cwd client/ dev",
+    "lint": "eslint .",
+    "heroku-postbuild": "cd backend && yarn build && cd ../",
+    "start": "cd backend && yarn start"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.1.0",
+    "@typescript-eslint/parser": "^4.1.0",
+    "eslint": "^7.8.1",
+    "eslint-config-prettier": "^6.10.1",
+    "eslint-plugin-prettier": "^3.1.2",
+    "eslint-plugin-react": "^7.20.6",
+    "eslint-plugin-react-hooks": "^4.1.0",
+    "rexreplace": "^4.1.1"
+  },
+  "workspaces": [
+    "client",
+    "backend",
+    "shared"
+  ],
+  "dependencies": {
+    "prettier": "^2.2.0"
+  }
+}

@@ -1,0 +1,12 @@
+{
+    "name": "@kotan/shared",
+    "version": "1.0.0",
+    "main": "index.js",
+    "files": [
+      "./"
+    ],
+    "license": "MIT",
+    "scripts": {},
+    "dependencies": {}
+  }
+  

@@ -1,0 +1,44 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+p {
+    font-family: "HK Grotesk";
+    font-style: normal;
+    font-size: 16px;
+    font-weight: 400;
+    opacity: 1;
+}
+
+h1 {
+    font-family: "HK Grotesk";
+    font-size: 24px;
+    font-weight: normal;
+    color: #000000;
+    opacity: 1;
+}
+
+h2 {
+    font-family: "HK Grotesk";
+    font-size: 20px;
+    font-weight: normal;
+    color: #000000;
+    opacity: 1;
+}
+
+@font-face {
+    font-family: "HK Grotesk";
+      src: url("/fonts/HkGrotesk/HKGrotesk-Regular.ttf");
+ }
+ 
+ @font-face {
+    font-family: "HK Grotesk";
+      src: url("/fonts/HkGrotesk/HKGrotesk-Bold.ttf");
+    font-weight: bold;
+ }
+
+ @font-face {
+     font-family: "Passion One";
+      src: url("/fonts/PassionOne/PassionOne-Regular.ttf")
+ }
