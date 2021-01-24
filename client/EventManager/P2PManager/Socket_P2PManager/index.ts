@@ -1,5 +1,5 @@
 import { createP2PStore } from "../P2PStore";
-import type { Color, RoomId, PlayerId } from "@ESP/shared/types";
+import type { Color, RoomId, PlayerId } from "@esp/shared/types";
 import type {
   SocketEvent,
   EmitToHostEvent,
@@ -9,7 +9,7 @@ import type {
   BroadcastHistoryEvent,
   BroadcastHistoryRequest,
   BroadcastHistoryResponse,
-} from "@ESP/shared/socket/types";
+} from "@esp/shared/socket/types";
 import type { P2PManager, PublicP2PState } from "../types";
 
 import { io, Socket } from "socket.io-client";
@@ -196,7 +196,7 @@ class Socket_P2PManager<EmitT, BroadcastT>
       return;
     }
     const event: BroadcastHistoryResponse<BroadcastT> = {
-      type: "BROADCAST_HISTORY_RESPONSE",
+      type: "BROADCAST_HISTORY_RespONSE",
       payload: {
         requester,
         data: {
@@ -328,7 +328,7 @@ class Socket_P2PManager<EmitT, BroadcastT>
         break;
       }
 
-      case "BROADCAST_HISTORY_RESPONSE": {
+      case "BROADCAST_HISTORY_RespONSE": {
         console.log(" Received Broadcast History Response");
         this._onReceiveBroadcastHistoryResponse(event.payload.data.history);
         break;

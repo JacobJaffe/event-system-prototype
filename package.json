@@ -1,9 +1,9 @@
 {
-  "name": "ESP",
+  "name": "esp",
   "version": "1.0.0",
-  "description": "ESP monorepo",
+  "description": "esp monorepo",
   "main": " ",
-  "repository": "git@github.com:JacobJaffe/ESP.git",
+  "repository": "git@github.com:JacobJaffe/event-system-prototype.git",
   "author": "Jacob Jaffe",
   "license": "MIT",
   "private": true,

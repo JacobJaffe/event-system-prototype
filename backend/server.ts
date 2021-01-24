@@ -2,7 +2,7 @@ import * as express from "express";
 import logger from "./logger";
 import { Server, Socket } from "socket.io";
 import RoomManager from "./RoomManager";
-import { PlayerId, RoomId } from "@ESP/shared/types";
+import { PlayerId, RoomId } from "@esp/shared/types";
 import type {
   BroadcastHistoryEvent,
   BroadcastHistoryRequest,
@@ -11,7 +11,7 @@ import type {
   P2PManagementEvent_client,
   P2PManagementEvent_server,
   ServerErrorEvent,
-} from "@ESP/shared/socket/types";
+} from "@esp/shared/socket/types";
 import * as cors from "cors";
 
 const PORT = process.env.PORT || 5000;
@@ -218,7 +218,7 @@ const handleEvent = (
       return;
     }
 
-    case "BROADCAST_HISTORY_RESPONSE": {
+    case "BROADCAST_HISTORY_RespONSE": {
       respondToRequester(socket, event);
       return;
     }

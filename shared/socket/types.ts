@@ -60,7 +60,7 @@ export type BroadcastHistoryRequest = SocketEvent<
   }
 >;
 export type BroadcastHistoryResponse<T> = SocketEvent<
-  "BROADCAST_HISTORY_RESPONSE",
+  "BROADCAST_HISTORY_RespONSE",
   {
     requester: PlayerId;
     data: {

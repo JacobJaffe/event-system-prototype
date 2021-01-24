@@ -1,4 +1,4 @@
-import type { Color, PlayerId, RoomId } from "@ESP/shared/types";
+import type { Color, PlayerId, RoomId } from "@esp/shared/types";
 import type { UseStore } from "zustand";
 
 export type ConnectionStatus =

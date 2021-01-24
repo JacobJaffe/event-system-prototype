@@ -1,4 +1,4 @@
-import { Color, PlayerId, RoomId } from "@ESP/shared/types";
+import { Color, PlayerId, RoomId } from "@esp/shared/types";
 import generateRoomId from "./generateRoomId";
 
 const CODE_LENGTH = 6;

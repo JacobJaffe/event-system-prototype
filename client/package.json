@@ -1,5 +1,5 @@
 {
-  "name": "@ESP/client",
+  "name": "@esp/client",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
@@ -10,8 +10,8 @@
   "dependencies": {
     "@babel/core": "^7.12.9",
     "@babel/preset-typescript": "^7.12.7",
-    "@ESP/backend": "*",
-    "@ESP/shared": "*",
+    "@esp/backend": "*",
+    "@esp/shared": "*",
     "@types/dat.gui": "^0.7.6",
     "@types/next": "^9.0.0",
     "@types/react": "^16.7.18",

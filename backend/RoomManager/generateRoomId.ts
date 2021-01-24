@@ -1,4 +1,4 @@
-import { RoomId } from "@ESP/shared/types";
+import { RoomId } from "@esp/shared/types";
 
 let isFirstRoom = true;
 const generateRoomId = (length: number): RoomId => {
