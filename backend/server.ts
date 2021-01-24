@@ -19,7 +19,7 @@ const app = express();
 
 const allowedOrigins = [
   "http://localhost:3000",
-  "https://event-system-prototype.vercel.app/",
+  "https://event-system-prototype.vercel.app",
 ];
 app.use(
   cors({
