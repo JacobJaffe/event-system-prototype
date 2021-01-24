@@ -1,9 +1,9 @@
 {
-  "name": "kotan",
+  "name": "ESP",
   "version": "1.0.0",
-  "description": "Kotan monorepo",
+  "description": "ESP monorepo",
   "main": " ",
-  "repository": "git@github.com:JacobJaffe/kotan.git",
+  "repository": "git@github.com:JacobJaffe/ESP.git",
   "author": "Jacob Jaffe",
   "license": "MIT",
   "private": true,

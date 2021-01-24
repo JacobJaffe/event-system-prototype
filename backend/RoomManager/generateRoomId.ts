@@ -1,4 +1,4 @@
-import { RoomId } from "@kotan/shared/types";
+import { RoomId } from "@ESP/shared/types";
 
 let isFirstRoom = true;
 const generateRoomId = (length: number): RoomId => {

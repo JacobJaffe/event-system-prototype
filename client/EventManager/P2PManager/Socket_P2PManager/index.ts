@@ -1,5 +1,5 @@
 import { createP2PStore } from "../P2PStore";
-import type { Color, RoomId, PlayerId } from "@kotan/shared/types";
+import type { Color, RoomId, PlayerId } from "@ESP/shared/types";
 import type {
   SocketEvent,
   EmitToHostEvent,
@@ -9,7 +9,7 @@ import type {
   BroadcastHistoryEvent,
   BroadcastHistoryRequest,
   BroadcastHistoryResponse,
-} from "@kotan/shared/socket/types";
+} from "@ESP/shared/socket/types";
 import type { P2PManager, PublicP2PState } from "../types";
 
 import { io, Socket } from "socket.io-client";

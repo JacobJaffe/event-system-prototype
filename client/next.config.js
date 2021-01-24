@@ -37,7 +37,7 @@ function withCustomWebpack(config = {}) {
 }
 
 const plugins = [
-  [withTranspileModules, { transpileModules: ["@kotan"] }],
+  [withTranspileModules, { transpileModules: ["@ESP"] }],
   [
     withCustomBabelConfig,
     { babelConfigFile: path.resolve("../babel.config.js") },
