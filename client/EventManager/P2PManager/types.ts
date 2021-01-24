@@ -1,4 +1,4 @@
-import type { Color, RoomId } from "@kotan/shared/types";
+import type { Color, PlayerId, RoomId } from "@kotan/shared/types";
 import type { UseStore } from "zustand";
 
 export type ConnectionStatus =
@@ -28,14 +28,23 @@ export interface P2PManager<EmitType, BroadcastType> {
   initHandlers: ({
     onReceiveBroadcast,
     onReceiveEmit,
+    onReceiveBroadcastHistoryRequest,
+    onReceiveBroadcastHistoryResponse,
   }: {
-    acceptMessage: (message: EmitType) => BroadcastType;
     onReceiveBroadcast: (messages: BroadcastType[]) => void;
     onReceiveEmit: (messages: EmitType[]) => void;
+    onReceiveBroadcastHistoryRequest: (requester: PlayerId) => void;
+    onReceiveBroadcastHistoryResponse: (messages: BroadcastType[]) => void;
   }) => void;
 
   broadcastToRoom: (messages: BroadcastType[]) => void;
   emitToHost: (messages: EmitType[]) => void;
+
+  requestBroadcastHistory: () => void;
+  respondBroadcastHistory: (
+    history: BroadcastType[],
+    requester: PlayerId
+  ) => void;
 
   // read only state exposed via a zustand store
   useP2PStore: UseStore<PublicP2PState>;

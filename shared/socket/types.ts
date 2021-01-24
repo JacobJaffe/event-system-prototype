@@ -5,6 +5,10 @@ export interface SocketEvent<T extends string, U> {
   payload: U;
 }
 
+//
+// P2P Management:
+//
+
 export type JoinPayload = {
   type: "REQUEST_JOIN";
   data: { roomId: RoomId; color: Color; hostIfNeeded?: boolean };
@@ -33,15 +37,45 @@ export type P2PManagementEvent_server = SocketEvent<
   RoomJoinSuccessPayload | RoomJoinFailurePayload | NewHostPayload
 >;
 
+export type P2PManagementEvent =
+  | P2PManagementEvent_server
+  | P2PManagementEvent_client;
+
+//
+// Game State Management:
+//
+
 export type BroadcastRoomEvent<T> = SocketEvent<
   "BROADCAST_ROOM",
   { messages: T[] }
 >;
 export type EmitToHostEvent<T> = SocketEvent<"EMIT_TO_HOST", { messages: T[] }>;
 
-export type P2PManagementEvent =
-  | P2PManagementEvent_server
-  | P2PManagementEvent_client;
+// State syncing / initialization:
+
+export type BroadcastHistoryRequest = SocketEvent<
+  "BROADCAST_HISTORY_REQUEST",
+  {
+    requester: PlayerId;
+  }
+>;
+export type BroadcastHistoryResponse<T> = SocketEvent<
+  "BROADCAST_HISTORY_RESPONSE",
+  {
+    requester: PlayerId;
+    data: {
+      history: T[];
+    };
+  }
+>;
+
+export type BroadcastHistoryEvent<T> =
+  | BroadcastHistoryRequest
+  | BroadcastHistoryResponse<T>;
+
+//
+// Errors
+//
 
 export type ServerErrorEvent = SocketEvent<
   "UNHANDLED_ERROR",

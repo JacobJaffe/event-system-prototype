@@ -1,11 +1,14 @@
 import { createP2PStore } from "../P2PStore";
-import type { Color, RoomId } from "@kotan/shared/types";
+import type { Color, RoomId, PlayerId } from "@kotan/shared/types";
 import type {
   SocketEvent,
   EmitToHostEvent,
   BroadcastRoomEvent,
   P2PManagementEvent_server,
   P2PManagementEvent_client,
+  BroadcastHistoryEvent,
+  BroadcastHistoryRequest,
+  BroadcastHistoryResponse,
 } from "@kotan/shared/socket/types";
 import type { P2PManager, PublicP2PState } from "../types";
 
@@ -19,6 +22,7 @@ const endpoint = "http://localhost:5000";
  * Cannot be a P2PManagementEvent_server event
  */
 type OutgoingEvent<EmitT, BroadcastT> =
+  | BroadcastHistoryEvent<BroadcastT>
   | P2PManagementEvent_client
   | BroadcastRoomEvent<BroadcastT>
   | EmitToHostEvent<EmitT>;
@@ -28,6 +32,7 @@ type OutgoingEvent<EmitT, BroadcastT> =
  * Cannot be a P2PManagementEvent_client event
  */
 type IncomingEvent<EmitT, BroadcastT> =
+  | BroadcastHistoryEvent<BroadcastT>
   | P2PManagementEvent_server
   | BroadcastRoomEvent<BroadcastT>
   | EmitToHostEvent<EmitT>;
@@ -87,6 +92,8 @@ class Socket_P2PManager<EmitT, BroadcastT>
 
   private _onReceiveBroadcastHandler: (messages: BroadcastT[]) => void;
   private _onReceiveEmitHandler: (messages: EmitT[]) => void;
+  private _onReceiveBroadcastHistoryRequest: (requester) => void;
+  private _onReceiveBroadcastHistoryResponse: (messages: BroadcastT[]) => void;
   private handlersInitialized: boolean;
 
   /**
@@ -95,9 +102,13 @@ class Socket_P2PManager<EmitT, BroadcastT>
   initHandlers = ({
     onReceiveBroadcast,
     onReceiveEmit,
+    onReceiveBroadcastHistoryRequest,
+    onReceiveBroadcastHistoryResponse,
   }: {
     onReceiveBroadcast: (messages: BroadcastT[]) => void;
     onReceiveEmit: (messages: EmitT[]) => void;
+    onReceiveBroadcastHistoryRequest: (requester) => void;
+    onReceiveBroadcastHistoryResponse: (messages: BroadcastT[]) => void;
   }): void => {
     if (this.handlersInitialized) {
       console.error("Socket P2P Manager | Cannot re-initialize handlers!");
@@ -105,6 +116,8 @@ class Socket_P2PManager<EmitT, BroadcastT>
     console.log("Socket P2P Manager | Setting up handlers");
     this._onReceiveBroadcastHandler = onReceiveBroadcast;
     this._onReceiveEmitHandler = onReceiveEmit;
+    this._onReceiveBroadcastHistoryRequest = onReceiveBroadcastHistoryRequest;
+    this._onReceiveBroadcastHistoryResponse = onReceiveBroadcastHistoryResponse;
     this.handlersInitialized = true;
   };
 
@@ -140,6 +153,60 @@ class Socket_P2PManager<EmitT, BroadcastT>
     console.groupEnd();
   };
 
+  requestBroadcastHistory = (): void => {
+    const { connectionStatus, isHost } = this.useP2PStore.getState();
+    if (isHost) {
+      console.error(
+        "Socket P2P Manager | cannot request history because is host"
+      );
+      return;
+    }
+    // TODO: consider if this breaks an invariant; should connected always be required to be hosting?
+    if (connectionStatus !== "Room") {
+      console.error(
+        "Socket P2P Manager | cannot request history because not connected"
+      );
+      return;
+    }
+    const event: BroadcastHistoryRequest = {
+      type: "BROADCAST_HISTORY_REQUEST",
+      payload: {
+        requester: this.socket.id as PlayerId,
+      },
+    };
+    this.emitEvent(event);
+  };
+
+  respondBroadcastHistory = (
+    history: BroadcastT[],
+    requester: PlayerId
+  ): void => {
+    const { connectionStatus, isHost } = this.useP2PStore.getState();
+    if (!isHost) {
+      console.error(
+        "Socket P2P Manager | cannot respond history because is not host"
+      );
+      return;
+    }
+    // TODO: consider if this breaks an invariant; should connected always be required to be hosting?
+    if (connectionStatus !== "Room") {
+      console.error(
+        "Socket P2P Manager | cannot respond history because not connected"
+      );
+      return;
+    }
+    const event: BroadcastHistoryResponse<BroadcastT> = {
+      type: "BROADCAST_HISTORY_RESPONSE",
+      payload: {
+        requester,
+        data: {
+          history,
+        },
+      },
+    };
+    this.emitEvent(event);
+  };
+
   broadcastToRoom = (messages: BroadcastT[]): void => {
     const { connectionStatus, isHost } = this.useP2PStore.getState();
     if (!isHost) {
@@ -153,6 +220,7 @@ class Socket_P2PManager<EmitT, BroadcastT>
       console.error(
         "Socket P2P Manager | cannot broadcast to room because not connected"
       );
+      return;
     }
     const event: BroadcastRoomEvent<BroadcastT> = {
       type: "BROADCAST_ROOM",
@@ -211,6 +279,12 @@ class Socket_P2PManager<EmitT, BroadcastT>
               isHost: event.payload.data.isHost,
               connectionStatus: "Room",
             });
+            if (!event.payload.data.isHost) {
+              console.log(
+                "Successfully joined room as non-host. Requesting game history."
+              );
+              this.requestBroadcastHistory();
+            }
             break;
           }
           case "ROOM_JOIN_FAILURE": {
@@ -245,7 +319,23 @@ class Socket_P2PManager<EmitT, BroadcastT>
         }
         break;
       }
+
+      case "BROADCAST_HISTORY_REQUEST": {
+        console.log(
+          `Received Broadcast History Request from ${event.payload.requester}`
+        );
+        this._onReceiveBroadcastHistoryRequest(event.payload.requester);
+        break;
+      }
+
+      case "BROADCAST_HISTORY_RESPONSE": {
+        console.log(" Received Broadcast History Response");
+        this._onReceiveBroadcastHistoryResponse(event.payload.data.history);
+        break;
+      }
+
       default: {
+        assertUnreachable(event);
         const unknownEvent = event as SocketEvent<string, unknown>;
         console.error(
           `Unexpected event received: ${unknownEvent.type}`,
@@ -322,3 +412,8 @@ class Socket_P2PManager<EmitT, BroadcastT>
 }
 
 export default Socket_P2PManager;
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function assertUnreachable(x: never): void {
+  console.error("Assert Unreachable: ", x);
+}

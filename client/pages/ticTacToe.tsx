@@ -267,7 +267,7 @@ const Tile: FunctionComponent<{
         boxSizing: "border-box",
         zIndex: hovered ? 10 : 0,
         border: hovered ? "4px solid black" : "2px solid white",
-        transition: "ease 0.2s border",
+        transition: "ease 0.2s border, ease 0.1s background-color",
         backgroundColor: color !== "empty" ? color.toLowerCase() : "#aaa",
       }}
     />

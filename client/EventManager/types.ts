@@ -1,5 +1,6 @@
 import { P2PManager } from "./P2PManager/types";
 import { GameStateManager } from "./GameStateManager/types";
+import { PlayerId } from "shared/types";
 
 export abstract class EventManager<
   RequestedEventType,
@@ -27,6 +28,8 @@ export abstract class EventManager<
           `EventManager | Error Reducing a message from broadcast: ${error}`,
           e
         );
+      } else {
+        this.AcceptedEventList.push(e);
       }
     });
   };
@@ -48,13 +51,30 @@ export abstract class EventManager<
       if (error) {
         console.log(`Not accepting event. Message: ${error}`, e);
       } else {
+        console.log("Accepting Message: ", e);
         accepted.push(this._acceptMessage(e));
       }
     });
     if (accepted.length > 0) {
-      this.AcceptedEventList.concat(accepted);
+      this.AcceptedEventList.push(...accepted);
       this.p2pManager.broadcastToRoom(accepted);
     }
+    console.log("New Accepted Events: ", this.AcceptedEventList, accepted);
+  };
+
+  private _onReceiveBroadcastHistoryRequest = (requester: PlayerId) => {
+    this.p2pManager.respondBroadcastHistory(this.AcceptedEventList, requester);
+  };
+
+  private _onReceiveBroadcastHistoryResponse = (
+    messages: AcceptedEventType[]
+  ) => {
+    if (this.AcceptedEventList.length !== 0) {
+      console.error(
+        "EventManager| Error: Can only recieve broadcast history response if no current accepted events"
+      );
+    }
+    this._onReceiveBroadcast(messages);
   };
 
   /**
@@ -64,13 +84,14 @@ export abstract class EventManager<
    */
   connectP2PManagerWithGameStateManager = (): void => {
     this.p2pManager.initHandlers({
-      acceptMessage: this._acceptMessage,
       onReceiveBroadcast: this._onReceiveBroadcast,
       onReceiveEmit: this._onReceiveEmit,
+      onReceiveBroadcastHistoryRequest: this._onReceiveBroadcastHistoryRequest,
+      onReceiveBroadcastHistoryResponse: this
+        ._onReceiveBroadcastHistoryResponse,
     });
   };
 }
-
 export interface RequestedGameEvent<T extends string, U> {
   type: T;
   data: U;

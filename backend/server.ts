@@ -4,6 +4,8 @@ import { Server, Socket } from "socket.io";
 import RoomManager from "./RoomManager";
 import { PlayerId, RoomId } from "@kotan/shared/types";
 import type {
+  BroadcastHistoryEvent,
+  BroadcastHistoryRequest,
   BroadcastRoomEvent,
   EmitToHostEvent,
   P2PManagementEvent_client,
@@ -107,6 +109,7 @@ io.on("connection", (socket: Socket) => {
 const handleEvent = (
   socket: Socket,
   event:
+    | BroadcastHistoryEvent<unknown>
     | P2PManagementEvent_client
     | EmitToHostEvent<unknown>
     | BroadcastRoomEvent<unknown>
@@ -210,6 +213,16 @@ const handleEvent = (
       return;
     }
 
+    case "BROADCAST_HISTORY_REQUEST": {
+      forwardToHost(socket, event);
+      return;
+    }
+
+    case "BROADCAST_HISTORY_RESPONSE": {
+      respondToRequester(socket, event);
+      return;
+    }
+
     default: {
       exhaustSilently(event);
       logger.error(event, `eventHandler: unexpected event`);
@@ -246,14 +259,25 @@ const broadcastToRoom = (
 // TODO: error handling?
 const forwardToHost = (
   clientSocket: Socket,
-  event: EmitToHostEvent<unknown>
+  event: EmitToHostEvent<unknown> | BroadcastHistoryRequest
 ) => {
   const { roomId, error } = RoomManager.getRoomIdByPlayerId(
     clientSocket.id as PlayerId
   );
+  // TODO: ensure requester is correct here. (Don't allow clients to spoof ids)
   if (error) throw new Error(error);
   const { hostId } = RoomManager.getRoom(roomId);
   io.to(hostId).emit(event.type, event.payload);
+};
+
+/**
+ * responses from a host to a player
+ */
+const respondToRequester = (
+  hostSocket: Socket,
+  event: { type: string; payload: { requester: PlayerId } }
+) => {
+  hostSocket.to(event.payload.requester).emit(event.type, event.payload);
 };
 
 const hostBroadcastToRoom = (
