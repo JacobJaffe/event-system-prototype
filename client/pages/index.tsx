@@ -37,6 +37,7 @@ const TicTacToePage: FunctionComponent = () => {
         </div>
         <div style={{ height: 2, backgroundColor: "black", width: "100%" }} />
         <div>
+          {connectionStatus === "Initial" && <h2>Connecting to Server...</h2>}
           {connectionStatus === "Lobby" && (
             <LobbyView
               onCreate={({ color }) =>

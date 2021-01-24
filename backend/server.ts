@@ -17,7 +17,10 @@ import * as cors from "cors";
 const PORT = process.env.PORT || 5000;
 const app = express();
 
-const allowedOrigins = ["http://localhost:3000"];
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://event-system-prototype.vercel.app/",
+];
 app.use(
   cors({
     origin: function (origin, callback) {
