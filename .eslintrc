@@ -18,6 +18,7 @@
       "no-unused-vars": "off",
       "@typescript-eslint/no-unused-vars": "error",
       "no-shadow": "error",
+      "prefer-template": "warn"
     },
     "parserOptions": {
       "ecmaVersion": 2020,

@@ -20,8 +20,16 @@ class _RoomManager {
     this.playersToRoomIds = new Map();
   }
 
-  createRoom(playerId: PlayerId): RoomId {
-    const id = generateRoomId(CODE_LENGTH);
+  createRoom(playerId: PlayerId, overrideId?: RoomId): RoomId {
+    // Basic check that a supplied room id matches our requirements.
+    // TODO: harden this to really prevent malicious codes.
+    if (
+      overrideId &&
+      (overrideId.length !== CODE_LENGTH + 1 || overrideId[3] !== "-")
+    ) {
+      throw new Error(`Supplied RoomId is invalid ${overrideId}`);
+    }
+    const id = overrideId || generateRoomId(CODE_LENGTH);
     if (this.activeRooms.has(id)) {
       throw new Error(`Duplicate RoomId: ${id}`);
     }

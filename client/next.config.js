@@ -45,4 +45,10 @@ const plugins = [
   [withCustomWebpack],
 ];
 
+const config = {
+  async rewrites() {
+    return [];
+  },
+};
+
 module.exports = withPlugins(plugins, config);
