@@ -15,7 +15,7 @@ import type { P2PManager, PublicP2PState } from "../types";
 import { io, Socket } from "socket.io-client";
 import { UseStore } from "zustand";
 
-const endpoint = "http://localhost:5000";
+const endpoint = `${process.env.NEXT_PUBLIC_BACKEND_URL}`;
 
 /**
  * Events to host or to server.
