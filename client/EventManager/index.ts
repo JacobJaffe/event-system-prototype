@@ -1,1 +1,1 @@
-export { default } from "./EventManager";
+export { default } from "./EventManager_TicTacToe";

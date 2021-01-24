@@ -29,11 +29,9 @@ export interface P2PManager<EmitType, BroadcastType> {
     onReceiveBroadcast,
     onReceiveEmit,
   }: {
-    signMessage: (message: EmitType) => BroadcastType;
+    acceptMessage: (message: EmitType) => BroadcastType;
     onReceiveBroadcast: (messages: BroadcastType[]) => void;
-    onReceiveEmit: (
-      messages: EmitType[]
-    ) => Promise<{ messages: BroadcastType[] }>;
+    onReceiveEmit: (messages: EmitType[]) => void;
   }) => void;
 
   broadcastToRoom: (messages: BroadcastType[]) => void;

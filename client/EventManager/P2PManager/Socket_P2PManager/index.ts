@@ -37,7 +37,6 @@ class Socket_P2PManager<EmitT, BroadcastT>
   implements P2PManager<EmitT, BroadcastT> {
   useP2PStore: UseStore<PublicP2PState>;
   private socket: Socket;
-  private handlersSetup: boolean;
 
   constructor() {
     console.group("Socket_P2PManager | Constructor");
@@ -81,15 +80,14 @@ class Socket_P2PManager<EmitT, BroadcastT>
       console.groupEnd();
     });
 
-    this.handlersSetup = false;
+    this.handlersInitialized = false;
 
     console.groupEnd();
   }
 
   private _onReceiveBroadcastHandler: (messages: BroadcastT[]) => void;
-  private _onReceiveEmitHandler: (
-    messages: EmitT[]
-  ) => Promise<{ messages: BroadcastT[] }>;
+  private _onReceiveEmitHandler: (messages: EmitT[]) => void;
+  private handlersInitialized: boolean;
 
   /**
    * Setup the side affects for when the socket gets incoming data (After validating that the data is good)
@@ -99,12 +97,15 @@ class Socket_P2PManager<EmitT, BroadcastT>
     onReceiveEmit,
   }: {
     onReceiveBroadcast: (messages: BroadcastT[]) => void;
-    onReceiveEmit: (messages: EmitT[]) => Promise<{ messages: BroadcastT[] }>;
+    onReceiveEmit: (messages: EmitT[]) => void;
   }): void => {
+    if (this.handlersInitialized) {
+      console.error("Socket P2P Manager | Cannot re-initialize handlers!");
+    }
     console.log("Socket P2P Manager | Setting up handlers");
     this._onReceiveBroadcastHandler = onReceiveBroadcast;
     this._onReceiveEmitHandler = onReceiveEmit;
-    this.handlersSetup = true;
+    this.handlersInitialized = true;
   };
 
   private _onReceiveEmit = (event: EmitToHostEvent<EmitT>) => {
@@ -278,7 +279,6 @@ class Socket_P2PManager<EmitT, BroadcastT>
     this.useP2PStore.setState({
       connectionStatus: "Joining",
     });
-    // TODO: How is failure handled for this?
     this.emitEvent(event);
   };
 
